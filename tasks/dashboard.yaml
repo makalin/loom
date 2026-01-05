@@ -1,0 +1,37 @@
+task: "Build User Dashboard"
+parallel: true
+sub_tasks:
+  - id: "api_gen"
+    task: "Generate FastAPI Endpoints"
+    action: "Generate FastAPI endpoints for dashboard data"
+    sub_tasks:
+      - id: "user_stats"
+        task: "User Statistics Endpoint"
+        action: "Create /api/dashboard/stats endpoint"
+      - id: "recent_activity"
+        task: "Recent Activity Endpoint"
+        action: "Create /api/dashboard/activity endpoint"
+  
+  - id: "ui_gen"
+    task: "Create React Components"
+    action: "Build React dashboard components"
+    depends_on: ["api_gen"]
+    sub_tasks:
+      - id: "dashboard_layout"
+        task: "Dashboard Layout"
+        action: "Create main dashboard layout component"
+      - id: "stats_widget"
+        task: "Statistics Widget"
+        action: "Create statistics display widget"
+        depends_on: ["dashboard_layout"]
+      - id: "activity_feed"
+        task: "Activity Feed"
+        action: "Create activity feed component"
+        depends_on: ["dashboard_layout"]
+  
+  - id: "security_review"
+    task: "Security Review"
+    human_gate: true
+    action: "Review generated auth logic"
+    depends_on: ["api_gen", "ui_gen"]
+
